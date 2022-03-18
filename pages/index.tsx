@@ -6,7 +6,7 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
 import WalletConnectProvider from '@walletconnect/web3-provider'
 import { providers } from 'ethers'
 import Web3Modal from 'web3modal'
-import { getPulseAddress, ellipseAddress } from '../utils/helpers';
+import { ellipseAddress } from '../utils/helpers';
 import styles from '../styles/Home.module.css'
 
 const enum Chain {
@@ -45,7 +45,6 @@ type StateType = {
   provider?: any
   web3Provider?: any
   address?: string
-  pulseBalance?: number
 }
 
 type ActionType =
@@ -54,7 +53,6 @@ type ActionType =
       provider?: StateType['provider']
       web3Provider?: StateType['web3Provider']
       address?: StateType['address']
-      pulseBalance?: StateType['pulseBalance']
     }
   | {
       type: 'RESET_WEB3_PROVIDER'
@@ -64,8 +62,6 @@ const initialState: StateType = {
   provider: null,
   web3Provider: null,
   address: '',
-  chainId: 0,
-  pulseBalance: 0
 }
 
 function reducer(state: StateType, action: ActionType): StateType {
@@ -76,8 +72,6 @@ function reducer(state: StateType, action: ActionType): StateType {
         provider: action.provider,
         web3Provider: action.web3Provider,
         address: action.address,
-        chainId: action.chainId,
-        pulseBalance: action.pulseBalance
       }
     case 'RESET_WEB3_PROVIDER':
       return initialState
@@ -90,7 +84,7 @@ const Home: NextPage = () => {
   const [isLogged, setIsLogged] = useState(false)
   const [network, setNetwork] = useState(Chain.Ethereum)
   const [state, dispatch] = useReducer(reducer, initialState)
-  const { provider, web3Provider, address, chainId } = state
+  const { provider, web3Provider, address } = state
   const { publicKey } = useWallet()
 
   function handleChangeNetwork(event: any) {
@@ -158,7 +152,7 @@ const Home: NextPage = () => {
         setIsLogged(false)
       }
     }
-  }, [publicKey])
+  }, [publicKey, network])
 
   return (
     <div className={styles.container}>
@@ -172,9 +166,11 @@ const Home: NextPage = () => {
         <div className={styles.grid}>
           <select onChange={handleChangeNetwork}>
             <option disabled>Select Network</option>
-            {Object.keys(Chain).map((chain, i) => {
-              return <option key={i}>{chain}</option>
-            })}
+            <option>Ethereum</option>
+            <option>BSC</option>
+            <option>Polygon</option>
+            <option>FTM</option>
+            <option>Solana</option>
           </select>
           {network == Chain.Solana?
             <WalletMultiButton /> :
